@@ -1,6 +1,9 @@
-
 export default function Page() {
   return (
-        <h1>Hello welcome to excalidraw</h1>
+    <div>
+      <h1 className="text-3xl font-bold underline text-red-500">
+        Hello world!
+      </h1>
+    </div>
   );
 }
