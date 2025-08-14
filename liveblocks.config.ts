@@ -1,7 +1,7 @@
 // Define Liveblocks types for your application
 // https://liveblocks.io/docs/api-reference/liveblocks-react#Typing-your-data
 
-import { createClient } from "@liveblocks/client";
+import { createClient, LiveMap } from "@liveblocks/client";
 
 const client = createClient({
   publicApiKey:process.env.LIVEBLOCKS_PUBLIC_KEY!
@@ -20,6 +20,7 @@ declare global {
     Storage: {
       // Example, a conflict-free list
       // animals: LiveList<string>;
+      canvasObjects:LiveMap<string,any>;
     };
 
     // Custom user info set when authenticating with a secret key
