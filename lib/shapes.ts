@@ -96,6 +96,13 @@ export const handleImageUpload = ({
   shapeRef,
   syncShapeInStorage,
 }: ImageUpload) => {
+
+  const MAX_SIZE = 100 * 1024; // bytes
+
+  if (file.size > MAX_SIZE) {
+    alert("Image size should not be more than 100 KB.");
+    return;
+  }
   const reader = new FileReader();
 
   reader.onload = () => {
