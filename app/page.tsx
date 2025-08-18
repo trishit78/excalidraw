@@ -1,16 +1,16 @@
 "use client";
 
 import {fabric}  from 'fabric';
-import LeftSideBar from "@/components/LeftSideBar";
+//import LeftSideBar from "@/components/LeftSideBar";
 import Live from "@/components/Live";
 import Navbar from "@/components/Navbar";
 import RightSideBar from "@/components/RightSideBar";
 import { useEffect, useRef, useState } from "react";
-import { handleCanvaseMouseMove, handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, initializeFabric, renderCanvas } from "@/lib/canvas";
+import { handleCanvaseMouseMove, handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvasSelectionCreated, initializeFabric, renderCanvas } from "@/lib/canvas";
 import { handleResize } from '@/lib/resize';
-import { ActiveElement } from '@/types/type';
+import { ActiveElement, Attributes } from '@/types/type';
 import { useMutation, useRedo, useStorage, useUndo } from '@liveblocks/react';
-import { defaultNavElement } from '@/constants';
+import { defaultNavElement, shortcuts } from '@/constants';
 import { handleDelete, handleKeyDown } from '@/lib/key-events';
 import { handleImageUpload } from '@/lib/shapes';
 
@@ -28,6 +28,20 @@ const selectedShapeRef = useRef<string | null>(null);
 const activeObjectRef = useRef<fabric.Object | null>(null);
 
 const imageInputRef = useRef<HTMLInputElement>(null);
+
+const [elementAttributes,setElementAttributes]= useState<Attributes>({
+  width:'',
+  height:'',
+  fontSize:'',
+  fontFamily:'',
+  fontWeight:'',
+  fill:'#aabbcc',
+  stroke:'#aabbcc'
+})
+const isEditingRef = useRef(false);
+
+
+
 
   const [activeElement,setActiveElement] = useState<ActiveElement>({
     name:'',
@@ -143,10 +157,22 @@ canvas.on("object:modified",(options:any)=>{
       })
     })
 
+    canvas.on("selection:created",(options:any)=>{
+      handleCanvasSelectionCreated({
+        options,
+        isEditingRef,
+        setElementAttributes
+      })
+    })
+    
+    
     window.addEventListener("resize",()=>{
       handleResize({fabricRef})
     })
 
+
+
+    
 
     window.addEventListener("keydown",(e:any)=>{
       handleKeyDown({
@@ -168,10 +194,15 @@ canvas.on("object:modified",(options:any)=>{
   renderCanvas({ fabricRef, canvasObjects, activeObjectRef });
 }, [fabricRef, canvasObjects, activeObjectRef]);
 
-
+ 
 
   return (
+    
+
+
+    
     <>
+   
       <main className="h-screen overflow-hidden">
         <Navbar 
           activeElement={activeElement}
@@ -188,13 +219,21 @@ canvas.on("object:modified",(options:any)=>{
           }}
         />
         <section className="flex h-full flex-row">
-       {canvasObjects && (
+       {/* {canvasObjects && (
   <LeftSideBar allShapes={Array.from(canvasObjects)} />
-)}
-          <Live   canvasRef={canvasRef}/>
-          <RightSideBar />
+)} */}
+          <RightSideBar
+            elementAttributes={elementAttributes}
+            setElementAttributes={setElementAttributes}
+            fabricRef={fabricRef}
+            isEditingRef={isEditingRef}
+            activeObjectRef={activeObjectRef}
+            syncShapeInStorage={syncShapeInStorage}
+          />
+          <Live   canvasRef={canvasRef}  undo={undo} redo={redo}/>
         </section>
       </main>
+  
     </>
   );
 }
