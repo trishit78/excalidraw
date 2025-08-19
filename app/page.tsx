@@ -6,13 +6,19 @@ import Live from "@/components/Live";
 import Navbar from "@/components/Navbar";
 import RightSideBar from "@/components/RightSideBar";
 import { useEffect, useRef, useState } from "react";
-import { handleCanvaseMouseMove, handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvasSelectionCreated, initializeFabric, renderCanvas } from "@/lib/canvas";
+import { handleCanvaseMouseMove, handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvasObjectScaling, handleCanvasSelectionCreated, handlePathCreated, initializeFabric, renderCanvas } from "@/lib/canvas";
 import { handleResize } from '@/lib/resize';
 import { ActiveElement, Attributes } from '@/types/type';
 import { useMutation, useRedo, useStorage, useUndo } from '@liveblocks/react';
 import { defaultNavElement, shortcuts } from '@/constants';
 import { handleDelete, handleKeyDown } from '@/lib/key-events';
 import { handleImageUpload } from '@/lib/shapes';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 
 export default function Page() {
   const undo = useUndo();
@@ -164,8 +170,19 @@ canvas.on("object:modified",(options:any)=>{
         setElementAttributes
       })
     })
+    canvas.on("object:scaling",(options:any)=>{
+      handleCanvasObjectScaling({
+        options,setElementAttributes
+      })
+    })
     
-    
+    canvas.on("path:created",(options:any)=>{
+      handlePathCreated({
+        options,syncShapeInStorage
+      })
+    })
+
+
     window.addEventListener("resize",()=>{
       handleResize({fabricRef})
     })
@@ -202,6 +219,8 @@ canvas.on("object:modified",(options:any)=>{
 
     
     <>
+     <ContextMenu>
+      <ContextMenuTrigger>
    
       <main className="h-screen overflow-hidden">
         <Navbar 
@@ -233,6 +252,18 @@ canvas.on("object:modified",(options:any)=>{
           <Live   canvasRef={canvasRef}  undo={undo} redo={redo}/>
         </section>
       </main>
+      </ContextMenuTrigger>
+  <ContextMenuContent  className='right-menu-content' >
+        {shortcuts.map((item)=>(
+          <ContextMenuItem key={item.key} className="gap-x-20" >
+              <p>{item.name}</p>
+              <p className='text-xs text-primary-grey-300'>{item.shortcut}</p>
+          </ContextMenuItem>
+        ))}
+  </ContextMenuContent>
+
+
+    </ContextMenu>
   
     </>
   );

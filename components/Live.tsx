@@ -13,13 +13,7 @@ import ReactionSelector from "./reactions/ReactionButton";
 import FlyingReaction from "./reactions/FlyingReaction";
 import useInterval from "@/hooks/useInterval";
 
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu"
-import { shortcuts } from "@/constants";
+
 
 type Props = {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -154,38 +148,11 @@ const Live = ({canvasRef}:Props) => {
     setCursorState({ mode: CursorMode.Reaction, reaction, isPressed: false });
   }, []);
 
-// const handleContextMenuClick = useCallback((key: string) => {
-//     switch (key) {
-//       case "Chat":
-//         setCursorState({
-//           mode: CursorMode.Chat,
-//           previousMessage: null,
-//           message: "",
-//         });
-//         break;
-
-//       case "Reactions":
-//         setCursorState({ mode: CursorMode.ReactionSelector });
-//         break;
-
-//       case "Undo":
-//         undo();
-//         break;
-
-//       case "Redo":
-//         redo();
-//         break;
-
-//       default:
-//         break;
-//     }
-//   }, []);
 
 
   return (
     <>
-     <ContextMenu>
-      <ContextMenuTrigger>
+    
     <div
     id="canvas"
     onPointerMove={handlePointerMove}
@@ -222,18 +189,7 @@ const Live = ({canvasRef}:Props) => {
       <LiveCursors others={others} />
       
     </div>
-      </ContextMenuTrigger>
-  <ContextMenuContent  className='right-menu-content' >
-        {shortcuts.map((item)=>(
-          <ContextMenuItem key={item.key} className="gap-x-20" >
-              <p>{item.name}</p>
-              <p className='text-xs text-primary-grey-300'>{item.shortcut}</p>
-          </ContextMenuItem>
-        ))}
-  </ContextMenuContent>
-
-
-    </ContextMenu>
+      
           </>
   );
 };
